@@ -1,6 +1,7 @@
-'use client'
 import { CircleUser } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import {
@@ -12,10 +13,8 @@ import {
 	DropdownMenuTrigger,
 } from './ui/dropdown-menu'
 
-const SignInButton = () => {
-	const { data: session } = useSession()
-	console.log({ session })
-
+const SignInButton = async () => {
+	const session = await getServerSession(authOptions)
 	if (session && session.user)
 		return (
 			<div className='flex gap-4 ml-auto'>
