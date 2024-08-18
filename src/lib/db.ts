@@ -1,9 +1,5 @@
 import { Backend_URL } from './Constants'
-
-export type Case = {
-	id: string
-	name: string
-}
+import { Case, User } from './types'
 
 export const fetchCases = async (authorId: string): Promise<Case[]> => {
 	const res = await fetch(`${Backend_URL}/cases?authorId=${authorId}`, {
@@ -61,4 +57,55 @@ export const updateCase = async (id: string, name: string): Promise<void> => {
 	if (!res.ok) {
 		throw new Error('Failed to update case')
 	}
+}
+
+export const fetchUsers = async (accessToken: string): Promise<User[]> => {
+	const response = await fetch(`${Backend_URL}/user`, {
+		method: 'GET',
+		headers: {
+			authorization: `Bearer ${accessToken}`,
+			'Content-Type': 'application/json',
+		},
+	})
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch users')
+	}
+
+	return response.json()
+}
+
+export const fetchUserWithTasks = async (
+	userId: string,
+	accessToken: string
+): Promise<{ user: User; tasks: Case[] }> => {
+	const [userResponse, tasksResponse] = await Promise.all([
+		fetch(`${Backend_URL}/user/${userId}`, {
+			method: 'GET',
+			headers: {
+				authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+		}),
+		fetch(`${Backend_URL}/cases?authorId=${userId}`, {
+			method: 'GET',
+			headers: {
+				authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+		}),
+	])
+
+	if (!userResponse.ok) {
+		throw new Error('Failed to fetch user')
+	}
+
+	if (!tasksResponse.ok) {
+		throw new Error('Failed to fetch user tasks')
+	}
+
+	const user = await userResponse.json()
+	const tasks = await tasksResponse.json()
+
+	return { user, tasks }
 }
