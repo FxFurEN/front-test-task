@@ -5,8 +5,8 @@ export type Case = {
 	name: string
 }
 
-export const fetchCases = async (): Promise<Case[]> => {
-	const res = await fetch(`${Backend_URL}/cases`, {
+export const fetchCases = async (authorId: string): Promise<Case[]> => {
+	const res = await fetch(`${Backend_URL}/cases?authorId=${authorId}`, {
 		method: 'GET',
 	})
 
