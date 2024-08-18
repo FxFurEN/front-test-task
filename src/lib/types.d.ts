@@ -1,5 +1,10 @@
 export type User = {
-  id: string;
-  name: string;
-  email: string;
-};
+	id: string
+	email: string
+	name?: string
+}
+
+export type Case = {
+	id: string
+	name: string
+}
