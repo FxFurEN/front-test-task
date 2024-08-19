@@ -1,77 +1,98 @@
-"use client";
-import { Button } from "@/components/Button";
-import InputBox from "@/components/InputBox";
-import { Backend_URL } from "@/lib/Constants";
-import Link from "next/link";
-import React, { useRef } from "react";
+'use client'
+import { Button } from '@/components/ui/button'
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Backend_URL } from '@/lib/Constants'
+import Link from 'next/link'
+import { useRef } from 'react'
+import { toast, Toaster } from 'sonner'
 
 type FormInputs = {
-  name: string;
-  email: string;
-  password: string;
-};
+	name: string
+	email: string
+	password: string
+}
 
 const SignupPage = () => {
-  const register = async () => {
-    const res = await fetch(Backend_URL + "/auth/register", {
-      method: "POST",
-      body: JSON.stringify({
-        name: data.current.name,
-        email: data.current.email,
-        password: data.current.password,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!res.ok) {
-      alert(res.statusText);
-      return;
-    }
-    const response = await res.json();
-    alert("User Registered!");
-    console.log({ response });
-  };
-  const data = useRef<FormInputs>({
-    name: "",
-    email: "",
-    password: "",
-  });
-  return (
-    <div className="m-2 border rounded overflow-hidden shadow">
-      <div className="p-2 bg-gradient-to-b from-white to-slate-200 text-slate-600">
-        Sign up
-      </div>
-      <div className="p-2 flex flex-col gap-6">
-        <InputBox
-          autoComplete="off"
-          name="name"
-          labelText="Name"
-          required
-          onChange={(e) => (data.current.name = e.target.value)}
-        />
-        <InputBox
-          name="email"
-          labelText="Email"
-          required
-          onChange={(e) => (data.current.email = e.target.value)}
-        />
-        <InputBox
-          name="password"
-          labelText="password"
-          type="password"
-          required
-          onChange={(e) => (data.current.password = e.target.value)}
-        />
-        <div className="flex justify-center items-center gap-2">
-          <Button onClick={register}>Submit</Button>
-          <Link className="" href={"/"}>
-            Cancel
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-};
+	const data = useRef<FormInputs>({
+		name: '',
+		email: '',
+		password: '',
+	})
 
-export default SignupPage;
+	const register = async () => {
+		const promise = fetch(Backend_URL + '/auth/register', {
+			method: 'POST',
+			body: JSON.stringify({
+				name: data.current.name,
+				email: data.current.email,
+				password: data.current.password,
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}).then(async res => {
+			if (!res.ok) {
+				const errorText = await res.text()
+				throw new Error(errorText)
+			}
+			const response = await res.json()
+			return { name: 'User Registered!', data: response }
+		})
+
+		toast.promise(promise, {
+			loading: 'Registering...',
+			success: data => data.name,
+			error: error => `Error: ${error.message}`,
+		})
+	}
+
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Sign Up</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<Input
+					autoComplete='off'
+					name='name'
+					placeholder='Name'
+					required
+					className='mb-5'
+					onChange={e => (data.current.name = e.target.value)}
+				/>
+				<Input
+					name='email'
+					placeholder='Email'
+					required
+					className='mb-5'
+					onChange={e => (data.current.email = e.target.value)}
+				/>
+				<Input
+					name='password'
+					placeholder='Password'
+					type='password'
+					required
+					onChange={e => (data.current.password = e.target.value)}
+				/>
+			</CardContent>
+			<CardFooter>
+				<Button className='bg-black text-white mr-5' onClick={register}>
+					Submit
+				</Button>
+				<Link className='' href={'/'}>
+					Cancel
+				</Link>
+			</CardFooter>
+			<Toaster />
+		</Card>
+	)
+}
+
+export default SignupPage

@@ -30,6 +30,11 @@ const SignInButton = async () => {
 						<DropdownMenuSeparator />
 						<DropdownMenuItem>{session.user.name}</DropdownMenuItem>
 						<DropdownMenuItem>
+							<Link href={'/friends'} className='text-blue-600'>
+								Friends{' '}
+							</Link>
+						</DropdownMenuItem>
+						<DropdownMenuItem>
 							<Link href={'/api/auth/signout'} className='text-red-600'>
 								Logout
 							</Link>
@@ -46,7 +51,7 @@ const SignInButton = async () => {
 			</Button>
 
 			<Button className='flex gap-4 ml-auto bg-black text-white'>
-				<Link href={'/signup'}>Sign Up</Link>
+				<Link href={'/api/auth/signup'}>Sign Up</Link>
 			</Button>
 		</div>
 	)
