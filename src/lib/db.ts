@@ -109,3 +109,65 @@ export const fetchUserWithTasks = async (
 
 	return { user, tasks }
 }
+
+export const addFriend = async (
+	userId: string,
+	friendId: string,
+	accessToken: string
+): Promise<void> => {
+	const response = await fetch(
+		`${Backend_URL}/user/${userId}/friends/${friendId}`,
+		{
+			method: 'POST',
+			headers: {
+				authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+		}
+	)
+
+	if (!response.ok) {
+		const data = await response.json()
+		throw new Error(data.message)
+	}
+}
+
+export const removeFriend = async (
+	userId: string,
+	friendId: string,
+	accessToken: string
+): Promise<void> => {
+	const response = await fetch(
+		`${Backend_URL}/user/${userId}/friends/${friendId}`,
+		{
+			method: 'DELETE',
+			headers: {
+				authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+		}
+	)
+
+	if (!response.ok) {
+		throw new Error('Failed to remove friend')
+	}
+}
+
+export const fetchFriends = async (
+	userId: string,
+	accessToken: string
+): Promise<User[]> => {
+	const response = await fetch(`${Backend_URL}/user/${userId}/friends`, {
+		method: 'GET',
+		headers: {
+			authorization: `Bearer ${accessToken}`,
+			'Content-Type': 'application/json',
+		},
+	})
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch friends')
+	}
+
+	return response.json()
+}

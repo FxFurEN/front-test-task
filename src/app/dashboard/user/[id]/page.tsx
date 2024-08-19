@@ -1,4 +1,5 @@
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import FriendActions from '@/components/friend-actions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { fetchUserWithTasks } from '@/lib/db'
 import { getServerSession } from 'next-auth'
@@ -15,10 +16,12 @@ const ProfilePage = async (props: Props) => {
 	if (!session?.backendTokens.accessToken) {
 		return <div>Error: No access token available</div>
 	}
+	const userId = session.user.id
+	const friendId = props.params.id
 
 	try {
 		const { user, tasks } = await fetchUserWithTasks(
-			props.params.id,
+			friendId,
 			session.backendTokens.accessToken
 		)
 
@@ -50,6 +53,13 @@ const ProfilePage = async (props: Props) => {
 							)}
 						</ul>
 					</div>
+				</CardContent>
+				<CardContent>
+					<FriendActions
+						userId={userId}
+						friendId={friendId}
+						accessToken={session.backendTokens.accessToken}
+					/>
 				</CardContent>
 			</Card>
 		)
